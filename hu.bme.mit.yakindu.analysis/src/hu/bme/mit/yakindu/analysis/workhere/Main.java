@@ -5,11 +5,14 @@ import org.eclipse.emf.ecore.EObject;
 import org.junit.Test;
 import org.yakindu.sct.model.sgraph.State;
 import org.yakindu.sct.model.sgraph.Statechart;
+import org.yakindu.sct.model.sgraph.Transition;
 
 import hu.bme.mit.model2gml.Model2GML;
 import hu.bme.mit.yakindu.analysis.modelmanager.ModelManager;
 
 public class Main {
+	static int nameCounter = 0;
+	
 	@Test
 	public void test() {
 		main(new String[0]);
@@ -29,7 +32,33 @@ public class Main {
 			EObject content = iterator.next();
 			if(content instanceof State) {
 				State state = (State) content;
-				System.out.println(state.getName());
+				if(state.getName().equals("")) {
+					System.out.println("State is unnamed. Proposed name: State"+state.hashCode());
+					nameCounter++;
+				} else {
+					System.out.println(state.getName());					
+				}
+			}
+		}
+		
+		iterator = s.eAllContents();
+		while (iterator.hasNext()) {
+			EObject content = iterator.next();
+			if(content instanceof Transition) {
+				Transition transition = (Transition) content;
+				System.out.println(transition.getSource().getName()+" -> "+transition.getTarget().getName());
+			}
+		}
+
+		iterator = s.eAllContents();
+		System.out.println("Traps:");
+		while (iterator.hasNext()) {
+			EObject content = iterator.next();
+			if(content instanceof State) {
+				State state = (State) content;
+				if(state.getOutgoingTransitions().size()==0) {
+					System.out.println(state.getName());					
+				}
 			}
 		}
 		
